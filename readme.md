@@ -25,6 +25,9 @@
 - 享元模式(Flyweight)
 
 #### 3. 行为型设计模式
+- 模板方法模式(TemplateMethod)
+- 观察者模式(Observer)
+- 状态模式(State)
 
 #### 4. 技巧型设计模式
 
