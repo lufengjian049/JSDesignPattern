@@ -28,6 +28,10 @@
 - 模板方法模式(TemplateMethod)
 - 观察者模式(Observer)
 - 状态模式(State)
+- 策略模式(Strategy)
+- 职责链模式(Chain of Responsibility)
+- 命令模式(Command)
+- 访问者模式(Vistor)
 
 #### 4. 技巧型设计模式
 
