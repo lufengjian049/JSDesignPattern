@@ -32,6 +32,10 @@
 - 职责链模式(Chain of Responsibility)
 - 命令模式(Command)
 - 访问者模式(Vistor)
+- 中介者模式(Mediator)
+- 备忘录模式(Mementto)
+- 迭代器模式(Interator)
+- 解释器模式(Interpreter)
 
 #### 4. 技巧型设计模式
 

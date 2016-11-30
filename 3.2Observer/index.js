@@ -3,6 +3,7 @@
 //被观察者或者说是主体对象
 //观察者对象有一个消息容器和三个方法（订阅，注销，发布）
 
+//消息发布系统
 var Observer = (function(){
     //防止消息队列暴露而被篡改，将消息容器作为静态私有变量
     var __messages = {};
@@ -41,6 +42,7 @@ var Observer = (function(){
     }
 })();
 
+//不同对象 通过 消息发布系统 注册 和发布 信息
 Observer.regist("test",function(e){
     console.log(e.type,e.args.msg);
 })
