@@ -38,6 +38,7 @@
 - 解释器模式(Interpreter)
 
 #### 4. 技巧型设计模式
+- 链模式(Operate of Responsibility)
 
 #### 5. 架构型设计模式
 
