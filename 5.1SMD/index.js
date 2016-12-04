@@ -126,3 +126,4 @@ F.module("dom","string.trim",function(dom,trim){
 
 //思考
 //将模块管理器F封装在闭包内，隐蔽模块的直接调用 ？？？？？？
+
