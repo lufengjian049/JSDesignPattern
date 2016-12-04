@@ -39,8 +39,14 @@
 
 #### 4. 技巧型设计模式
 - 链模式(Operate of Responsibility)
+- 委托模式(Entrust)
+- 节流模式(Throttler)
+- 简单模板模式(Simple Template)
+- 惰性模式(Layier)
+- 参与者模式(Participator)
+- 等待者模式(Waiter)
 
 #### 5. 架构型设计模式
-
+- 同步模式模式SMD(Synchronous Module Defjinition)
 
 
