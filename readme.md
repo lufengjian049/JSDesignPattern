@@ -47,6 +47,8 @@
 - 等待者模式(Waiter)
 
 #### 5. 架构型设计模式
-- 同步模式模式SMD(Synchronous Module Defjinition)
+- 同步模块模式SMD(Synchronous Module Definition)
+- 异步模块模式AMD(Asynchronous Module Definition)
+- Widget模式(Web Widget)
 
 
