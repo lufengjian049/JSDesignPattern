@@ -50,5 +50,8 @@
 - 同步模块模式SMD(Synchronous Module Definition)
 - 异步模块模式AMD(Asynchronous Module Definition)
 - Widget模式(Web Widget)
+- MVC模式(Model View Controller)
+- MVP(Model View Presenter)
+- MVVM(Model View ViewModel)
 
 

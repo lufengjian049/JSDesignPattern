@@ -39,7 +39,7 @@ F.module('lib/template',function(){
                     //过滤回车符，制表符，换行符
                     .replace(/[\r\t\n]/g,'')
                     //替换内容
-                    .replace(new RegExp(_left + '=(.*?)' + _right,'g'),"",typeof($1) === 'undefined' ? '' : $1,"")
+                    .replace(new RegExp(_left + '=(.*?)' + _right,'g'),"',typeof($1) === 'undefined' ? '' : $1,'")
                     //替换左分隔符
                     .replace(new RegExp(_left,'g'),"');")
                     //替换右分隔符
