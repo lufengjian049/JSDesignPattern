@@ -23,6 +23,7 @@
             i = 0,
             //依赖模块序列长度
             len;
+        //有依赖的情况
         if(len = deps.length){
             while(i < len){
                 (function(i){
@@ -31,6 +32,7 @@
                     //异步加载依赖模块
                     loadModule(deps[i],function(mod){
                         //依赖模块序列中添加依赖模块接口引用
+                        //之所以要缓存i，为了依赖模块的顺序与定义的顺序一致，然后在callback中调用
                         params[i] = mod;
                         //依赖模块加载完成，统计减一
                         depsCount--;
@@ -63,7 +65,7 @@
                 if(_module.status === 'loaded'){
                     setTimeout(callback(_module.exports),0);
                 }else{
-                    //缓存该模块所处文件加载完成回调函数
+                    //缓存该模块所处文件加载完成回调函数，关键就在此处。。。将每次的对应文件的load callback进行缓存，等加载完成后，在依次去调用，验证
                     _module.onload.push(callback);
                 }
             }else{ //模块第一次被依赖引用
@@ -87,9 +89,9 @@
             if(moduleCache[moduleName]){
                 _module = moduleCache[moduleName];
                 _module.status = 'loaded';
-                //矫正模块接口
+                //矫正模块接口，该模块 返回的功能列表
                 _module.exports = callback ? callback.apply(_module,params) : null;
-                //执行模块文件加载完成回调函数
+                //执行模块文件加载完成回调函数，从前往后 去直接load的callback，验证是否已经完全加载
                 while(fn = _module.onload.shift()){
                     fn(_module.exports);
                 }

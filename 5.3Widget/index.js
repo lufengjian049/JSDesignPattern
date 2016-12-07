@@ -62,6 +62,31 @@ F.module('lib/template',function(){
                            "return template_array.join('');"
                         ].join('');
             return new Function("templateData",fnBody);
+
+            // return function(templateData){
+            //     var template_array = [];
+            //     var fn = (function(data){
+            //         var template_key = '';
+            //         for(var key in data){
+            //             template_key += 'var '+ key + '=data[\"'+key+'\"];'
+            //         }
+            //         eval(template_key);
+            //         template_array.push(_dealTpl(str));
+            //         template_key = null;
+            //     })(templateData);
+            //     fn = null;
+            //     return template_array.join("");
+            // }
         };
     return _TplEngine;
 })
+
+var tpl = [
+    "<div>\n",
+        "{%if(test){%}\n",
+            "<span>{%=test%}</span>\n",
+        "{%}else{%}\n",
+            "<strong>{%=test%}</strong>\n",
+        "{%}%}\n",
+    "</div>"
+].join("")
