@@ -1,6 +1,6 @@
 //MVP模式
 //model View Presenter(管理者)
-//View 不能直接饮用Model层的数据，而是通过 Presenter层实现对model内数据的访问。所有层次的交互都发生在 Presenter中
+//View 不能直接引用Model层的数据，而是通过 Presenter层实现对model内数据的访问。所有层次的交互都发生在 Presenter中
 
 ~(function(window){
     //MVP构造函数
@@ -35,6 +35,7 @@
     };
     //可以像Zen Coding那样也模板，如  li.@model @choose @last[data-mode=@mode]>
     //@为变量名，# id， . class，+ 兄弟元素,> 下级元素
+    //@变量 最后还是 转为 {# #} 形式，进行变量替换
     MVP.view = function(){
         return function(str){
             //子元素或兄弟元素替换模板

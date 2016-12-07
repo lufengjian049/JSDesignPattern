@@ -3,6 +3,7 @@
 //<div class="first" data-bind="type:'slide',data:demo1"></div>
 //<div class="second" data-bind="type:'slide',data:demo2"></div>
 //<div class="third" data-bind="type:'progressbar',data:demo3"></div>
+//<div class="forth" data-bind="type:dropdownselect">
 
 //实现 视图模型层
 ~(function () {
@@ -59,7 +60,7 @@
             //将自定义属性data-bind转为对象
             return !!data && (new Function("return ({"+ data +"})"))();
         }
-        return function(){
+        return function(){ //初始化执行 页面中所有定义的 类型
             var doms = document.getElemensByTagName("*"),
                 ctx = null;
             for(var i =0;i<doms.length;i++){
