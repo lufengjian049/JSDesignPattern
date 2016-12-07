@@ -96,6 +96,7 @@ A.fn = A.prototype = {
     sort:[].sort,
     splice:[].splice
 }
+A.fn.init.prototype = A.fn;
 
 //拓展方法
 A.extend = A.fn.extend = function(){

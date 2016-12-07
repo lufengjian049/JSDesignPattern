@@ -22,8 +22,10 @@ var throttler =  function(){
         },param);
 
         //清除执行函数计时器句柄（多次触发时，要先清除之前的一系列计时器句柄，只保留最后一次的计时器句柄）
+        arguments.callee(true,fn);
         fn.__throttlerID = setTimeout(function(){
             fn.apply(p.context,p.args);
+
         },p.time);
     }
 }
@@ -31,8 +33,9 @@ var throttler =  function(){
 //滚动条 滚到运用节流 防止动画跳动
 
 function moveScroll(){
-    var top = $(document).scrollTop();
-    $("#back").animate({top:top+300},400,'easeOutCubic');
+    // var top = $(document).scrollTop();
+    // $("#back").animate({top:top+300},400,'easeOutCubic');
+    console.log("scroll");
 }
 
 $(window).on("scroll",function(){

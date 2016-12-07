@@ -80,8 +80,10 @@ LazyLoad.prototype = {
 
 new LazyLoad("container");
 
-
-// offsetLeft 也就是返回对象元素边界的左上角顶点相对于offsetParent的左上角顶点的水平偏移量。从这个定义中我们可以明确地知道offsetLeft与当前元素的margin-left和offsetParent的padding-left有关。也就是说应该是：
+//offsetParent 为上层元素 设置了定位属性(relative /  absolute ) ,没有 则为 根元素
+// offsetLeft 也就是返回对象元素边界的左上角顶点相对于offsetParent的左上角顶点的水平偏移量。
+// 从这个定义中我们可以明确地知道offsetLeft与当前元素的margin-left和offsetParent的padding-left有关。
+// 也就是说应该是：
 
 // 　　offsetLeft=(offsetParent的padding-left)+(中间元素的offsetWidth)+(当前元素的margin-left)。
 
