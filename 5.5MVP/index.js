@@ -134,6 +134,7 @@
             nav:function(M,V){
                 var data = M.getData("nav");
                 var tpl = V('li.@model @choose @last[data-mode=@mode]>');
+                $.appendTo();
             }
         };
         return {
@@ -150,3 +151,40 @@
     }
     window.MVP = MVP;
 })(window)
+
+//模块开发中的MVP
+F.module('lib/MVP',function(){
+    //MVP构造函数----- 修改
+    var MVP = function(modName,pst,data){
+        MVP.model.setData(modName,data);
+        MVP.presenter.add(modName,pst);
+    };
+    //。。。。不变
+    MVP.presenter = function(){
+        // ......
+        return {
+            init : function(){},
+            //为管理器添加模块,pst 模块管理器
+            add:function(modeName,pst){
+                C[modName] = pst;
+                return this;
+            }
+        }
+    }
+
+    return MVP;
+})
+
+//使用
+F.module(['lib/MVP','lib/A'],function(MVP,$){
+    $(function(){
+        MVP("sites",function(M,V,modName){
+            var tpl = V("");
+            $.appendTO();
+        },[
+            '聚划算','1号店'
+        ])
+    })
+})
+
+//为页面创建新闻模块，并添加新闻管理层(控制新闻显示样式以及数量)?
