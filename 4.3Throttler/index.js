@@ -42,3 +42,5 @@ $(window).on("scroll",function(){
     throttler(moveScroll);
     //节流返回顶部的动画
 })
+
+//优化 搜索页面 搜索框的change事件

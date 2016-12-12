@@ -83,3 +83,6 @@ Function.prototype.uncurry = function(){
 var toString = Object.prototype.toString.uncurry;
 console.log(toString([]));
 console.log(toString(function(){}));
+
+//思考
+//参与者模式能否用于自定义事件(观察者模式)中
