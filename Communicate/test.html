@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <script src="./jquery.min.js"></script>
+  <script src="./ques-react.js"></script>
+</head>
+<body>
+  <div id="rootContainer"></div>
+  <script>
+    $(function(){
+      // var messageComp = React.createClass({
+      //   componentWillMount:function(){
+      //     console.log('will mount')
+      //   },
+      //   render:function(){
+      //     return React.createElement('div',{'onclick':function(){alert('click')},'style':"color:red;"},'test文本',React.createElement('span',{'style':'font-weight:bold'},'spantext'),this.props.prop1)
+      //   },
+      //   componentDidMount:function(){
+      //     console.log('did mount')
+      //   }
+      // })
+      // React.render(React.createElement(messageComp,{prop1:'props1--test'}),document.getElementById("rootContainer"))
+      // React.render(React.createElement('div',{'onclick':function(){alert('click')},'style':"color:red;"},'test文本',React.createElement('span',{'style':'font-weight:bold'},'spantext'),'222'),document.getElementById("rootContainer"))
+      var TodoList = React.createClass({
+        getInitialState: function() {
+          return {items: []};
+        },
+        add:function(){
+          var nextItems = this.state.items.concat([this.state.text]);
+          this.setState({items: nextItems, text: ''});
+        },
+        onChange: function(e) {
+          this.setState({text: e.target.value});
+        },
+        render: function() {
+          var createItem = function(itemText) {
+            return React.createElement("div", null, itemText);
+          };
+
+          var lists = this.state.items.map(createItem);
+          var input = React.createElement("input", {onkeyup: this.onChange.bind(this),value: this.state.text});
+          var button = React.createElement("p", {onclick: this.add.bind(this)}, 'Add#' + (this.state.items.length + 1))
+          var children = lists.concat([input,button])
+
+          return React.createElement("div", null,children);
+        }
+      });
+
+      React.render(React.createElement(TodoList), document.getElementById("rootContainer"));
+    })
+  </script>
+</body>
+</html>
