@@ -171,6 +171,65 @@ var Event = Class.extend({
       ~index && (this._events[eventname].splice(index,1))
     }
     return this
+  },
+  queue:function(queue,callback){
+    var self = this,index = 0,data=[];
+    var getFireCallback = function(eventname){
+      return function(val){
+        self.fire(eventname,val || null)
+      }
+    }
+    var _next = function(){
+      var task;
+      if(task = queue.shift()){
+        var eventname = 'queueevent' + index
+        self.on(eventname,function(val){
+          data.push(val)
+          _next()
+        })
+        task.call(this,getFireCallback(eventname),data)
+        index++
+      }else{
+        callback.apply(this,data);
+      }
+    }
+    _next()
+  },
+  //all events:evetns callback
+  when:function(){
+    var len = arguments.length,
+        callback = arguments[len - 1],
+        self = this,
+        events = [].slice.call(arguments,0,-1);
+    //针对各种传参的情况，统一处理events,(ev1,[ev2,ev3],callback),([ev1,ev2],callback) ..etc
+    events = Array.prototype.concat.apply([],events);
+    if(typeof callback !='function' || len < 2){
+      return this
+    }
+    var isOk = function(){
+      var isok = true,data=[];
+      for(var j=0;j<events.length;j++){
+        if(!self._fired.hasOwnProperty(events[j])){
+          isok = false
+          break;
+        }
+        var val = self._fired[events[j]].data
+        data.push(val)
+      }
+      if(isok)
+        callback.apply(null,data)
+    }
+    var _bind = function(eventname){
+      self.on(eventname,function(val){
+        self._fired || (self._fired = {})
+        self._fired[eventname] = self._fired[eventname] || {}
+        self._fired[eventname].data = val
+        isOk();
+      })
+    }
+    for(var i =0;i<events.length;i++){
+      _bind(events[i])
+    }
   }
 })
 var event = new Event();
@@ -183,6 +242,37 @@ var test2 = function(str){
 event.on('test',test1)
 event.on('test',test2)
 event.fire("test",'teststr').off("test",test1).fire("test",'off after')
+event.queue([function(cb){
+  setTimeout(function(){
+    console.log('1000...later...');
+    cb('q1q1')
+  },1000)
+},function(cb,argarr){
+  setTimeout(function(){
+    console.log('q1 ;',argarr[0])
+    console.log('1500...later...')
+    cb('from q2')
+  },1500)
+}],function(...args){
+  args.forEach(function(item){
+    console.log('print...',item)
+  })
+})
+function eat1(){
+  setTimeout(function(){
+    event.fire("eat-ok")
+  },1000)
+}
+function eat2(){
+  setTimeout(function(){
+    event.fire("eat2-ok")
+  },2000)
+}
+event.when('eat-ok',['eat2-ok'],function(){
+  console.log('all compolete')
+})
+eat1()
+eat2()
 
 //将event放入我们的base中，让子类都具有事件功能
 
