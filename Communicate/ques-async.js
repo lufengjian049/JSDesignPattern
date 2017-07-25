@@ -13,6 +13,136 @@ function co_old(generatorFunction){
     _next()
   }
 }
+//----thunkify
+function thunkify(fn){
+  return function(){
+    var args = [].slice.call(arguments)
+    return function(cb){
+      args.push(cb)
+      fn.apply(null,args)
+    }
+  }
+}
+//test thunkify
+function foo(a,b,cb){
+  setTimeout(function(){
+    cb(a+b)
+  },100)
+}
+var fooThunkify = thunkify(foo)
+var fooThunkory1 = fooThunkify(1,2)
+var fooThunkory2 = fooThunkify(1,1)
+fooThunkory1(function(sum){
+  // console.log(sum)
+})
+fooThunkory2(function(sum){
+  // console.log(sum)
+})
+//---thunkify
+
+//co-thunk -> error-first style
+function co_thunk(genFunc){
+  return function(done){
+    var ctx = this
+    var iterator = isGenerator(genFunc) ? genFunc : genFunc.call(ctx)
+    var _next = function(err,args){
+      // console.log("next")
+      var ret = iterator.next(args)
+      if(ret.done)
+        done.call(ctx,err,ret.value)
+      else{
+        //支持更多yield 类型,toThunk ,array object
+        var value = toThunk(ret.value,ctx)
+        value(_next)
+      }
+    }
+    _next()
+  }
+}
+//将对象 或者数组 转为thunk ,支持 object，array，promise,generator,generatorFunction
+function toThunk(obj,ctx){
+  if(isGenerator(obj)){
+    return co_thunk(obj)
+  }
+  if(isGeneratorFunction(obj)){
+    return co_thunk(obj.call(ctx))
+  }
+  if(isObject(obj) || isArray(obj)){
+    return objectToThunk.call(ctx,obj)
+  }
+  if(isPromise(obj)){
+    return promiseToThunk.call(ctx,obj)
+  }
+  return obj
+}
+//也是返回一个thunk函数。。。思路，都是讲数组中的thunk拿出来执行一遍，通过一个公用的length长度，执行完则长度-1，直到length为0 代表全部执行完成
+function objectToThunk(obj){
+  var ctx = this
+  return function(done){
+    var keys = Object.keys(obj)
+    var results = new obj.constructor()
+    var length = keys.length
+    var _run = function(fn,key){
+      //实现深度遍历，防止有数组嵌套等...
+      fn = toThunk(fn)
+      fn.call(ctx,function(err,res){
+        results[key] = res
+        --length || done.call(null,null,results)
+      })
+    }
+    keys.forEach(function(key){
+      _run(obj[key],key)
+    })
+  }
+}
+//yield promise
+function promiseToThunk(promise){
+  var ctx = this
+  return function(done){
+    promise.then(function(res){
+      done.call(ctx,null,res)
+    },function(err){
+      done.call(ctx,err,null)
+    })
+  }
+}
+var fs = require('fs');
+function size(file) {
+  return function(next){
+    setTimeout(function(){
+      next(null,~(Math.random() * 100))
+    },1000)
+    // fs.stat(file, function(err, stat){
+    //   if (err) return next(err);
+    //   next(null, stat.size || 0);
+    // });
+  }
+}
+//co也是返回一个thunk
+//thunk的函数格式都应该是(err,args)
+console.log('yield thunk..')
+co_thunk(function *(){
+  var a = yield size('./second.md');
+  var b = yield size('./test.html');
+  console.log(a);
+  console.log(b);
+  return [a,b];
+})(function (err,args){
+  console.log("callback===args=======");
+  console.log(args);
+})
+console.log('yield thunk array....')
+//并行执行
+co_thunk(function *(){
+  var a = size('./second.md')
+  var b = size('./test.html')
+  var s = yield [a,b]
+  return s
+})(function(err,args){
+  console.log("yield array callback args")
+  console.log(args)
+  console.log('err',err)
+})
 //yield thunk(callback)
 
 //尾触发机制，connect中间件
@@ -37,11 +167,15 @@ var App = {
 }
 //App.use(xxxx);App.start()
 //function(data,next){}
+
 function isPromise(obj){
   return obj && typeof obj.then === 'function'
 }
 function isObject(obj){
-  return Object == obj.constructor
+  return  obj && Object == obj.constructor
+}
+function isArray(obj){
+  return Object.prototype.toString.call(obj) == '[object Array]' || Array.isArray(obj)
 }
 function isGenerator(obj){
   return obj && typeof obj.next == 'function' && typeof obj.throw == 'function'
@@ -59,7 +193,7 @@ function toPromise(obj){
   if(isGeneratorFunction(obj) || isGenerator(obj)) return co.call(this,obj)
   if(typeof obj == 'function')
     return thunkToPromise.call(this,obj)
-  if(Object.prototype.toString.call(obj) == '[object Array]' || Array.isArray(obj))
+  if(isArray(obj))
     return arrayToPromise.call(this,obj)
   if(isObject(obj))
     return objectToPromise.call(this,obj)
@@ -156,14 +290,14 @@ function co(gen){
     }
   })
 }
-co(function *(){
-  var a = yield Promise.reject("for a value--error")
-  console.log('a=',a)
-  var b = yield Promise.resolve("for b value")
-  console.log('b=',b)
-  return b
-}).then(function(val){
-  console.log('then..',val)
-},function(err){
-  console.log('then error..',err)
-})
+// co(function *(){
+//   var a = yield Promise.reject("for a value--error")
+//   console.log('a=',a)
+//   var b = yield Promise.resolve("for b value")
+//   console.log('b=',b)
+//   return b
+// }).then(function(val){
+//   console.log('then..',val)
+// },function(err){
+//   console.log('then error..',err)
+// })
