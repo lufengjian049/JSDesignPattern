@@ -29,13 +29,13 @@ function foo(a,b,cb){
     cb(a+b)
   },100)
 }
-var fooThunkify = thunkify(foo)
-var fooThunkory1 = fooThunkify(1,2)
-var fooThunkory2 = fooThunkify(1,1)
-fooThunkory1(function(sum){
+var fooThunkory = thunkify(foo)
+var fooThunk1 = fooThunkify(1,2)
+var fooThunk2 = fooThunkify(1,1)
+fooThunk1(function(sum){
   // console.log(sum)
 })
-fooThunkory2(function(sum){
+fooThunk2(function(sum){
   // console.log(sum)
 })
 //---thunkify
@@ -301,3 +301,25 @@ function co(gen){
 // },function(err){
 //   console.log('then error..',err)
 // })
+
+function run(gen){
+  var args = [].slice.call(arguments,1)
+  it = isGenerator(gen) ? gen : gen.apply(this,args)
+  return Promise.resolve().then(function handleNext(value){
+    var next = it.next(value)
+    return (function handleResult(next){
+      if(next.done){
+        return next.value
+      }else{
+        return Promise.resolve(next.value)
+                  .then(handleNext,
+                    function handleError(err){
+                      return Promise.resolve(
+                              it.throw(err)
+                              ).then(handleResult);
+                    }
+                  )
+      }
+    })(next);
+  })
+}
