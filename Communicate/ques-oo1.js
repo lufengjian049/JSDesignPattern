@@ -1,3 +1,4 @@
+//类工厂
 (function(){
   //initializing是为了解决我们之前说的继承导致原型有多余参数的问题。当我们直接将父类的实例赋值给子类原型时。是会调用一次父类的构造函数的。
   //所以这边会把真正的构造流程放到init函数里面，通过initializing来表示当前是不是处于构造原型阶段，为true的话就不会调用init。
@@ -5,15 +6,12 @@
   //`/xyz/.test(function(){xyz;})`为true代表浏览器支持看到函数的内部代码，所以用`/\b_super\b/`来匹配。如果不行，就不管三七二十一。所有的函数都算有super关键字，于是就是个必定匹配的正则。
   var initializing = false, fnTest = /xyz/.test(function(){xyz;}) ? /\b_super\b/ : /.*/;
  
-  // The base Class implementation (does nothing)
   // 超级父类
   this.Class = function(){};
  
-  // Create a new Class that inherits from this class
-  // 生成一个类，这个类会具有extend方法用于继续继承下去
+  // 生成一个子类，这个类会具有extend方法用于继续继承下去
   Class.extend = function(prop) {
-    //保留当前类，一般是父类的原型
-    //this指向父类。初次时指向Class超级父类
+    //this指向父类原型方法，初始时Class
     var _super = this.prototype;
    
     // Instantiate a base class (but only create the instance,
@@ -23,10 +21,8 @@
     var prototype = new this();
     initializing = false;
    
-    // Copy the properties over onto the new prototype
     for (var name in prop) {
-      // Check if we're overwriting an existing function
-      //这边其实就是很简单的将prop的属性混入到子类的原型上。如果是函数我们就要做一些特殊处理
+      //将prop混入到子类原型上，function做些特殊处理
       prototype[name] = typeof prop[name] == "function" &&
         typeof _super[name] == "function" && fnTest.test(prop[name]) ?
         (function(name, fn){
@@ -51,23 +47,16 @@
         })(name, prop[name]) :
         prop[name];
     }
-   
-    // 这边是返回的类，其实就是我们返回的子类
+    //子类
     function Class() {
-      // All construction is actually done in the init method
+      //init作初始，父类调用init
       if ( !initializing && this.init )
         this.init.apply(this, arguments);
     }
-   
-    // 赋值原型链，完成继承
     Class.prototype = prototype;
-   
-    // 改变constructor引用
     Class.prototype.constructor = Class;
- 
-    // 为子类也添加extend方法
+    //为子类再添加静态方法，以便extend下去
     Class.extend = arguments.callee;
-   
     return Class;
   };
 })();
