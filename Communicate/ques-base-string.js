@@ -1,3 +1,6 @@
+//字符的原生方法
+//substr,substring,slice,indexOf,trim
+
 //扩展方法
 function contains(target,it){
     return !!(target && it && ~target.indexOf(it))
