@@ -3,6 +3,8 @@
 Array.prototype.indexOf = function(item,index){
     var ret = -1,len = this.length,
     i = ~~index; //~~undefined == 0
+    if(i < 0)
+        i += index
     for(;i<len;i++){
         if(this[i] === item){  //完全匹配 才行!!!!!!
             ret = i;
@@ -15,8 +17,10 @@ console.log("indexOf;",[1,2,3].indexOf(2))
 console.log("indexOf;",[1,2,3].indexOf(2,1))
 Array.prototype.lastIndexOf = function(item,index){
     var ret = -1,len = this.length,
-    i = typeof index == 'undefined' ? len : ~~index;
-    for(;i>0;i--){
+    i = typeof index == 'undefined' ? len-1 : ~~index;
+    if(i < 0)
+        i = Math.max(0,n + i)
+    for(;i>=0;i--){
         if(this[i] === item){
             ret = i;
             break
@@ -59,6 +63,8 @@ console.log("every",[1,2,3,4].every2(function(item){
 }))
 Array.prototype.reduce2 = function(fn,lastResult,scope){
     //fn,
+    if(this.length == 0)
+        return lastResult
     var i = typeof lastResult == 'undefined' ? 1 : 0,
         len = this.length;
     lastResult = lastResult || this[0]
@@ -168,8 +174,9 @@ function groupBy(target,val){
     },retobj = {},len = target.length,i=0;
     for(;i<len;i++){
         var key = callback(target[i],i)
-        retobj[key] || (retobj[key] = [])
-        retobj[key].push(target[i])
+        // retobj[key] || (retobj[key] = [])
+        // retobj[key].push(target[i])
+        (retobj[key] || (retobj[key] = [])).push(target[i])
     }
     return retobj
 }
@@ -182,11 +189,13 @@ function sortBy(target,fn,scope){
         }
     })
     compArr.sort(function(x,y){
-        if(x.comp > y.comp){
-            return 1
-        }else{
-            return -1
-        }
+        // if(x.comp > y.comp){
+        //     return 1
+        // }else{
+        //     return -1
+        // }
+        var a = x.comp,b = y.comp;
+        return a > b ? 1 : a < b ? -1 : 0
     })
     return pluck(compArr,"el")
 }
@@ -211,11 +220,11 @@ function diff(target,array){
 }
 //返回数组中最小的值
 function min(target){
-
+    return Math.min.apply(0,target)
 }
 function max(target){
-
-}
+    return Math.max.apply(0,target)
+} 
 
 //splice
 //pop push shift unshift
