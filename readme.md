@@ -20,9 +20,9 @@
 - 设配器模式(Adapter)
 - 代理模式(Proxy)
 - 装饰者模式(Decorator)
-- 桥接模式(Bridge)
-- 组合模式(Composite)
-- 享元模式(Flyweight)
+- 桥接模式(Bridge)  ！！！
+- 组合模式(Composite)   ！！！！
+- 享元模式(Flyweight)   ！！！！
 
 #### 3. 行为型设计模式
 - 模板方法模式(TemplateMethod)

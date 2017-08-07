@@ -15,6 +15,38 @@ var bind = function(bind){
     }
 }(Function.prototype.bind)
 
+// [].concat.apply([1,2],[[3,4]])
+// bind.apply([].concat)([1,2],[[3,4]])
+
+// Array.prototype.forEach.call(document.querySelectorAll(".klasses"), function(el){
+//     el.addEventListener("click", someFunction);
+// });
+
+// var unboundForEach = Array.prototype.forEach,
+//     forEach = Function.prototype.call.bind(unboundForEach);
+ 
+// forEach(document.querySelectorAll(".klasses"), function (el) {
+//     el.addEventListener("click", someFunction);
+// });
+Function.prototype.apply2 = function(x,y){
+    x = x || window
+    y = y || []
+    x.__apply = this
+    if(!x.__apply)
+        x.constructor.prototype.__apply = this
+    var r, j = y.length
+    switch(j){
+        case 0: r = x.__apply();break;
+        case 1: r = x.__apply(y[0]);break;
+        case 2: r = x.__apply(y[0],y[1]);break;
+        //...
+    }
+    try{
+        delete x.__apply ? x.__apply : x.constructor.prototype.__apply
+    }catch(e) {}
+    return r
+}
+console.log([].concat.apply2([1,2],[[3,4]]))
 //concat
 //切片 slice
 //hasOwnProperty
