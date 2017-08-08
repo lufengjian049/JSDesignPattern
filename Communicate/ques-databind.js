@@ -42,7 +42,16 @@ function observable(provider){
   }
 }
 function observableProp(provider,prop){
-  
+  const value = provider[prop]
+  Object.defineProperty(provider,prop,{
+    get() {
+
+      return value
+    },
+    set() {
+
+    }
+  })
 }
 const observeProvider = observable({
   test:'test',
