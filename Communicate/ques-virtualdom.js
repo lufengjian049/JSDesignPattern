@@ -20,3 +20,8 @@ Element.prototype.render = function(){
 function createElement(tagname,props,children){
   return new Element(tagname,props,children)
 }
+//差异类型:
+//1.文本节点 内容差异
+//2.节点替换
+//3.子节点移动、删除 重排
+//4.节点属性修改
