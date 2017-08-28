@@ -228,3 +228,8 @@ function max(target){
 
 //splice
 //pop push shift unshift
+
+//chunk([1,2,3,4],2)=[[1,2],[3,4]];
+function chunk(arr,size){
+    
+}
