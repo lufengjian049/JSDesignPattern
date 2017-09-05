@@ -75,7 +75,7 @@ const arrangeCategories = (categories, parent = null) => {
      })
    return result
  }
-
+//桶排序
  function sort(sarr){
     //常规方法
     for(var a=[],n=0;n<100;a[n++] = 0);
@@ -102,7 +102,7 @@ const arrangeCategories = (categories, parent = null) => {
  const slist = [54, 26, 93, 17, 77, 31, 44, 55, 20,26];
  console.log("sort");
  console.log(sort(slist));
-
+//冒泡排序
  function bubbleSort(sarr){
    for(var i=0,len=sarr.length;i<len;i++){
      for(var j=0;j<len-i-1;j++){
@@ -142,6 +142,7 @@ const arrangeCategories = (categories, parent = null) => {
 //   // quickSort(sarr,j+1,right);
 //   // return sarr;
 //  }
+//快速排序
 function quickSort(sarr,left,right){
   if(left > right){
       return;
@@ -170,3 +171,19 @@ function quickSort(sarr,left,right){
 }
  console.log("quickSort");
  console.log(quickSort([54, 26, 93, 17, 77, 31, 44, 55, 20,26,88,3,89]));
+
+ //队列
+// {
+//   data:[],
+//   head:0,
+//   tail:0
+// }
+ //栈
+//  {
+//    data:[],
+//    top:0
+//  }
+
+//出牌
+
+ //链表-有序的数组中插入一个数
