@@ -172,18 +172,139 @@ function quickSort(sarr,left,right){
  console.log("quickSort");
  console.log(quickSort([54, 26, 93, 17, 77, 31, 44, 55, 20,26,88,3,89]));
 
- //队列
+ //队列 queue
 // {
 //   data:[],
 //   head:0,
 //   tail:0
 // }
- //栈
-//  {
-//    data:[],
-//    top:0
-//  }
+var queue = {
+  data:[],
+  head:0,
+  tail:0,
+}
+queue.data = [6,4,9,7,1,8,0,7,7];
+queue.tail = queue.data.length - 1;
+var outedqueue = []
+while(queue.head != queue.tail){
+  outedqueue.push(queue.data[queue.head]);
+  queue.head++;
+  if(queue.head ==  queue.tail){
+    outedqueue.push(queue.data[queue.head]);
+    break;
+  }
+  var addtail = queue.data[queue.head];
+  queue.data[++queue.tail] = addtail;
+  queue.head++;
+  console.log('data:',queue.data,'head:',queue.head,'tail:',queue.tail);
+}
+console.log('queue:',outedqueue);
+
+function queueFunc(queue){
+  if(Object.prototype.toString.call(queue) == '[object Array]'){
+    this.data = queue;
+  }else{
+    this.data = [queue];
+  }
+  this.head = 0;
+  this.tail = this.data.length - 1;
+  this.isEmpty = this.head == this.tail ? true : false;
+}
+queueFunc.prototype.enqueue = function(val){
+  this.isEmpty = false;
+  this.data[++this.tail] = val;
+}
+queueFunc.prototype.dequeue = function(){
+  if(this.isEmpty)
+    return;
+  if(this.head == this.tail){
+    this.isEmpty = true;
+    return this.data[this.head]
+  }
+  return this.data[this.head++];
+}
+var queuetest = new queueFunc([6,4,9,7,1,8,0,7,7]);
+var outedqueue2 = [];
+while(!queuetest.isEmpty){
+  outedqueue2.push(queuetest.dequeue());
+  !queuetest.isEmpty && queuetest.enqueue(queuetest.data[queuetest.head++]);
+}
+console.log('queue2',outedqueue2);
+ //栈-回文 stack
+
+function stackFunc(stack){
+  if(Object.prototype.toString.call(stack) == '[object Array]'){
+    this.data = stack;
+  }else{
+    this.data = stack == void 0 ? [] : [stack];
+  }
+  this.top = this.data.length - 1;
+  this.isEmpty = this.top == -1 ? true : false;
+}
+stackFunc.prototype.instack = function(val){
+  this.isEmpty = false;
+  this.data[++this.top] = val;
+}
+stackFunc.prototype.outstack = function(){
+  if(this.isEmpty) return;
+  var outVal = this.data[this.top--];
+  if(this.top == -1){
+    this.isEmpty = true;
+  }
+  return outVal;
+}
+//haah xyzyx
+function isHuiWen(str){
+  var len = str.length,
+      iseven = len % 2 == 0,
+      mid = ~~(len / 2);
+  var astack = new stackFunc();
+  for(var i=0;i<len;i++){
+    if(i < mid){
+      astack.instack(str[i]);
+    }else{
+      if((iseven || (!iseven && i != mid)) && str[i] != astack.outstack()){
+        return false
+      }
+    }
+  }
+  return true;
+}
+console.log("haah:",isHuiWen("haah"))
+console.log("xyzyx:",isHuiWen("xyzyx"))
+console.log("xyzyxw:",isHuiWen("xyzyxw"))
 
 //出牌
 
- //链表-有序的数组中插入一个数
+//模拟链表-有序的数组中插入一个数
+function insert(sortarr,val){
+  var right = [];
+  for(var i=0,len=sortarr.length;i<len;i++){
+    if(sortarr[i+1] != void 0){
+      right.push(i+1);
+    }else{
+      right.push(-1);
+    }
+  }
+  console.log('right',right)
+  sortarr.push(val);
+  // len++
+  var t = 0;
+  while(t != -1){
+    if(sortarr[t] > val){
+      right[len] = right[t-1];
+      right[t-1] = len;
+      break;
+    }
+    t = right[t];
+  }
+  t = 0;
+  var retval = [];
+  while(t != -1){
+    retval.push(sortarr[t]);
+    t = right[t];
+  }
+  console.log('right',right)
+  return retval;
+}
+console.log("insert",insert([5,6,7,9,10],8));
