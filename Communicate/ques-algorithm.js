@@ -308,3 +308,12 @@ function insert(sortarr,val){
   return retval;
 }
 console.log("insert",insert([5,6,7,9,10],8));
+
+//枚举
+//1. 1-9  _ _ _ + _ _ _ = _ _ _ ; 用book 标记 简化
+
+//2.火柴棍等式 A + B = C ,0~9 : 6255456376
+
+//3.数的全排序， n个数的各种排序
+
+//深度优先搜索 Depth First Search,主要是当前该如何做，至于下一步则与第一步一样
