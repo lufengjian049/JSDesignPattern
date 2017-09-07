@@ -357,6 +357,7 @@ function getHourMin(milseconds){
 //3.数的全排序， n个数的各种排序
 
 //深度优先搜索 Depth First Search,主要是当前该如何做，至于下一步则与第一步一样
+//边界值
 //1-9 ,三位数相加
 var a = Array(10),book = Array.apply(null,Array(10)).map(_ => 0);
 var count = 0;
@@ -405,3 +406,8 @@ getAllSort(5)(1);
 console.timeEnd("test");  
 console.log('dfs task', getHourMin(Date.now() - startstamp2));
 console.log('count',count);
+
+//广度优先搜索 Breadth first search
+//一层一层扩展，  
+//队列，满足条件(边界&&未重复)有扩展点就入队，某点扩展完毕就出列（head指针要向后....），队列为空循环结束，队尾为要找的
+//迷宫 小岛  独立岛
