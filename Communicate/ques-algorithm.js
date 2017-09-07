@@ -312,8 +312,96 @@ console.log("insert",insert([5,6,7,9,10],8));
 //枚举
 //1. 1-9  _ _ _ + _ _ _ = _ _ _ ; 用book 标记 简化
 
+function getPlusEqual(){
+  var a = Array(10),book = Array(10);
+  for(a[1] = 1;a[1] < 10;a[1]++){
+    for(a[2] = 1;a[2] < 10;a[2]++){
+      for(a[3] = 1;a[3] < 10;a[3]++){
+        for(a[4] = 1;a[4] < 10;a[4]++){
+          for(a[5] = 1;a[5] < 10;a[5]++){
+            for(a[6] = 1;a[6] < 10;a[6]++){
+              for(a[7] = 1;a[7] < 10;a[7]++){
+                for(a[8] = 1;a[8] < 10;a[8]++){
+                  for(a[9] = 1;a[9] < 10;a[9]++){
+                    //标记重置
+                    for(var i = 1;i< 10;i++){
+                      book[i] = 0;
+                    }
+                    //在初始化book
+                    for(var j = 1;j< 10;j++){
+                      book[a[j]] = 1;
+                    }
+                    var sum = book.reduce(function(acc,item){
+                      return acc + item;
+                    },0);
+                    if(sum == 9 && ((a[1]*100+a[2]*10+a[3]) + (a[4]*100 + a[5]*10+a[6])) == (a[7]*100 + a[8]*10+a[9]) ){
+                      count++;
+                      console.log(`${a[1]}${a[2]}${a[3]} + ${a[4]}${a[5]}${a[6]} = ${a[7]}${a[8]}${a[9]}`);
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+function getHourMin(milseconds){
+  var seconds = ~~ (milseconds / 1000);
+  return `${Math.floor(seconds / 3600)}:${Math.floor(seconds / 60 % 60)}:${seconds % 60}`
+}
 //2.火柴棍等式 A + B = C ,0~9 : 6255456376
 
 //3.数的全排序， n个数的各种排序
 
 //深度优先搜索 Depth First Search,主要是当前该如何做，至于下一步则与第一步一样
+//1-9 ,三位数相加
+var a = Array(10),book = Array.apply(null,Array(10)).map(_ => 0);
+var count = 0;
+function dfs(step){
+  //边界情况
+  if(step == 10){
+    if(((a[1]*100+a[2]*10+a[3]) + (a[4]*100 + a[5]*10+a[6])) == (a[7]*100 + a[8]*10+a[9])){
+      count++;
+      console.log(`${a[1]}${a[2]}${a[3]} + ${a[4]}${a[5]}${a[6]} = ${a[7]}${a[8]}${a[9]}`);
+    }
+    return;
+  }
+  for(var i =1;i<10;i++){
+    if(book[i] == 0){
+      a[step] = i;
+      book[i] = 1;
+      dfs(step+1);
+      book[i] = 0;
+    }
+  }
+}
+//n个数的全排列
+function getAllSort(n){
+  var a = Array(n+1),book = Array.apply(null,Array(n+1)).map(_ => 0);
+  return function dfs2(step){
+    //边界情况
+    if(step == n+1){
+      console.log(a.join(""))
+      return;
+    }
+    for(var i=1;i<=n;i++){
+      if(book[i] == 0){
+        a[step] = i;
+        book[i] = 1;
+        dfs2(step+1);
+        book[i] = 0;
+      }
+    }
+  }
+}
+var startstamp2 = Date.now();
+console.time('test')
+// dfs(1);       //test: 40.899ms  count 336
+// getPlusEqual();  //test: 85020.275ms  count 336
+getAllSort(5)(1);
+console.timeEnd("test");  
+console.log('dfs task', getHourMin(Date.now() - startstamp2));
+console.log('count',count);
