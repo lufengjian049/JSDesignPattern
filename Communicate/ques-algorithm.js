@@ -200,19 +200,20 @@ while(queue.head != queue.tail){
 }
 console.log('queue:',outedqueue);
 
+//队列tail指向 末尾下一位，当head = tail 时队列为空
 function queueFunc(queue){
   if(Object.prototype.toString.call(queue) == '[object Array]'){
     this.data = queue;
   }else{
     this.data = [queue];
   }
-  this.head = 0;
-  this.tail = this.data.length - 1;
+  this.head = 1;
+  this.tail = this.data.length;
   this.isEmpty = this.head == this.tail ? true : false;
 }
 queueFunc.prototype.enqueue = function(val){
   this.isEmpty = false;
-  this.data[++this.tail] = val;
+  this.data[this.tail++] = val;
 }
 queueFunc.prototype.dequeue = function(){
   if(this.isEmpty)
@@ -232,14 +233,15 @@ while(!queuetest.isEmpty){
 console.log('queue2',outedqueue2);
  //栈-回文 stack
 
+ //栈 初始top=0  从1 开始计
 function stackFunc(stack){
   if(Object.prototype.toString.call(stack) == '[object Array]'){
     this.data = stack;
   }else{
     this.data = stack == void 0 ? [] : [stack];
   }
-  this.top = this.data.length - 1;
-  this.isEmpty = this.top == -1 ? true : false;
+  this.top = this.data.length;
+  this.isEmpty = this.top == 0 ? true : false;
 }
 stackFunc.prototype.instack = function(val){
   this.isEmpty = false;
