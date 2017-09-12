@@ -1,3 +1,24 @@
+function queueFunc(queue){
+  if(Object.prototype.toString.call(queue) == '[object Array]'){
+    this.data = queue;
+  }else{
+    this.data = [queue];
+  }
+  this.head = 1;
+  this.tail = this.data.length + 1;
+}
+queueFunc.prototype.enqueue = function(val){
+  this.data[this.tail++] = val;
+}
+queueFunc.prototype.dequeue = function(){
+  return this.data[this.head++];
+}
+// queueFunc.prototype.get = function(){
+//   return this.data[this.head];
+// }
+queueFunc.prototype.isEmpty = function(){
+  return this.head == this.tail;
+}
 //递归--深度优先遍历
 function getElementByid(elem,id){
   if(!elem) return null;
@@ -10,6 +31,24 @@ function getElementByid(elem,id){
   }
   return null;
 }
+//广度优先
+function getElementByidWFS(elem){
+  var queue1 = new queueFunc(elem);
+  return function(id){
+    while(queue1.head < queue1.tail){
+      //先check  还是先找扩展
+      var elem = queue1.dequeue();
+      if(elem.id == id){
+        return;
+      }
+      for(var i=0;i<elem.childNodes.length;i++){
+        var curElem = elem.childNodes[i];
+        queue1.enqueue(curElem);
+      }
+    }
+  }
+}
+getElementByidWFS("")("id");
 //非递归-深度优先遍历
 function getElementByid2(elem,id){
   while(elem){
