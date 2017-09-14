@@ -436,41 +436,6 @@ console.log('count',count);
 //建堆 ，排序(最小堆) ， 堆排序（从小到大，有最大堆）
 
 //创建堆
-function createHeap(arr){
-  var swape = function(i,j){
-    var tmp = arr[j];
-    arr[j] = arr[i];
-    arr[i] = tmp;
-  }
-  //向下挪动 节点
-  var siftdown = function(i){
-    var t,flag=0;//flag是否需要向下移动，0需要，1不需要
-    while(2*i <= n && flag == 0){
-      if(arr[i] > arr[2*i]){
-        t = 2 * i;
-      }else{
-        t = i;
-      }
-      if(2*i+1 <=n && arr[t] > arr[2*i+1]){
-        t = 2*i + 1;
-      }
-      if(t != i){
-        swape(t,i);
-        i = t;  //继续从t 顶点往下找
-      }else{
-        flag = 1;
-      }
-    }
-  }
-  //1~n,往后挪一位
-  var n = arr.length;
-  arr.unshift(0);
-  //最后一个非页节点编号
-  var lastNonLeaf = ~~(n/2);
-  for(;lastNonLeaf>=1;lastNonLeaf--){
-    siftdown(lastNonLeaf);
-  }
-}
 function heap(arr){
   this.data = Array.isArray(arr) ? arr : [arr];
   //从1开始编号
@@ -483,24 +448,18 @@ heap.prototype.createMinHeap = function(){
   //获取最后一个非叶结点
   var lastNonLeaf = ~~(this.count/2);
   for(;lastNonLeaf>=1;lastNonLeaf--){
-    this.siftdown(lastNonLeaf);
+    this.siftdownmax(lastNonLeaf);
   }
 }
 heap.prototype.createMaxHeap = function(){
-  //只能自顶向下
-  for(var i = 1;i<=this.count;i++){
-    this.siftup(i);
+  //获取最后一个非叶结点
+  var lastNonLeaf = ~~(this.count/2);
+  for(;lastNonLeaf>=1;lastNonLeaf--){
+    this.siftdownmin(lastNonLeaf);
   }
-  //[ 0, 87, 80, 76, 49, 56, 65, 12, 1, 25, 23, 4, 32 ]
-  //从最后一个叶子结点开始
-  // var lastLeaf = this.count,end = ~~(lastLeaf/2);
-  // for(;lastLeaf>= 1;lastLeaf--){
-  //   this.siftup(lastLeaf)
-  // }
-  //[ 0, 87, 76, 1, 56, 80, 32, 12, 49, 25, 23, 4, 65 ]
 }
 //往下移动- 大的往下
-heap.prototype.siftdown = function(i){
+heap.prototype.siftdownmax = function(i){
   var t,flag=0;//flag是否需要向下移动，0需要，1不需要
   var arr = this.data;
   while(2*i <= this.count && flag == 0){
@@ -520,10 +479,40 @@ heap.prototype.siftdown = function(i){
     }
   }
 }
-//往上移动
-heap.prototype.siftup = function(i){
+//大的往上
+heap.prototype.siftdownmin = function(i){
+  var t,flag=0;
+  var arr = this.data;
+  while(2*i <= this.count && flag == 0){
+    if(arr[i] < arr[2*i]){
+      t = 2*i;
+    }else{
+      t = i;
+    }
+    if(2*i+1 <=this.count && arr[t] < arr[2*i+1]){
+      t = 2*i + 1;
+    }
+    if(t != i){
+      this.swape(t,i);
+      i = t;
+    }else{
+      flag = 1;
+    }
+  }
+}
+//将大的往上移动--用于在 堆中添加新的元素，找到合适的位置，使最大堆定义成立，找到添加后的最大值
+heap.prototype.siftupmax = function(i){
   var parent = ~~(i/2);
   if(parent >=1 && this.data[parent] < this.data[i]){
+    this.swape(parent,i);
+    //交换之后 还需要再次往上比较
+    this.siftup(parent);
+  }
+}
+//将小的往上移动--用于在 堆中添加新的元素，找到合适的位置，使最小堆定义成立，找到添加后的最小值
+heap.prototype.siftupmin = function(i){
+  var parent = ~~(i/2);
+  if(parent >=1 && this.data[parent] > this.data[i]){
     this.swape(parent,i);
     //交换之后 还需要再次往上比较
     this.siftup(parent);
@@ -538,43 +527,37 @@ heap.prototype.swape = function(i,j){
 heap.prototype.printHeap = function(){
   return this.data.slice(1);
 }
+//从小到大
 heap.prototype.sort = function(){
   this.createMinHeap();
-  var sorted = [];
-  while(this.count > 1){
-    sorted.push(this.data[1]);
-    this.swape(1,this.count);
-    this.count--;
-    this.siftdown(1);//将最小置顶
-  }
-  //sorted从小到大，this.data为从大到小
-  return sorted;
-
-  //返回 从大到小，将堆顶最小的交换到末尾！！！
-  // while(this.count > 1){
-  //   this.swape(1,this.count);
-  //   this.count--;
-  //   this.siftdown(1);
-  // }
-  // return this.data.slice(1);
-}
-heap.prototype.sort2 = function(){
-  this.createMaxHeap();
-  console.log('max',this.data);
   var sorted = [];
   while(this.count){
     sorted.push(this.data[1]);
     this.swape(1,this.count);
     this.count--;
-    this.siftup(1);
+    this.siftdownmax(1);//将最小置顶
+  }
+  //sorted从小到大，this.data为从大到小
+  return sorted;
+  //返回 从大到小，将堆顶最小的交换到末尾！！！
+}
+//从大到小
+heap.prototype.sort2 = function(){
+  this.createMaxHeap();
+  var sorted = [];
+  while(this.count){
+    sorted.push(this.data[1]);
+    this.swape(1,this.count);
+    this.count--;
+    this.siftdownmin(1);
   }
   return sorted;
 }
 //最小堆可以实时获取最小值
 var testheap = new heap([1,87,32,56,23,76,12,49,25,80,4,65]);
-console.log(testheap.sort());
+console.log('min--',testheap.sort());
 // console.log(testheap.printHeap());
 var testheap2 = new heap([1,87,32,56,23,76,12,49,25,80,4,65]);
 // testheap2.createMaxHeap()
-console.log('max',testheap2.sort2());
+console.log('max--',testheap2.sort2());
 
