@@ -561,3 +561,7 @@ var testheap2 = new heap([1,87,32,56,23,76,12,49,25,80,4,65]);
 // testheap2.createMaxHeap()
 console.log('max--',testheap2.sort2());
 
+function create(arr){
+  
+}
+
