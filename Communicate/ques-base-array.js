@@ -372,3 +372,41 @@ var hello = function(x) { return 'HELLO, ' + x; };
 
 var greet = _compose(hello, toUpperCase);
 console.log(greet('kevin'));
+//都是在第一个元素之后insert
+function chainInsert(arr,val,fn){
+    var right = arr.map(function(item,index,_arr){
+        if(_arr[index+1] != void 0){
+            return index+1;
+        }else{
+            return -1;
+        }
+    })
+    var len = arr.length;
+    var t = 0;
+    while(t != -1){
+        var item = arr[t];
+        if(fn(item,t,arr)){
+            right[len] = right[t-1];
+            right[t-1] = len;
+            break;
+        }
+        t = right[t];
+    }
+    console.log(right)
+    arr[len] = val;
+    t = 0;
+    var retval = [];
+    while(t != -1){
+        retval.push(arr[t]);
+        t = right[t];
+    }
+    console.log(retval);
+    return retval;
+}
+//符合条件的元素前
+// chainInsert([1,2,3,5],4,function(item){
+//     return item > 3;
+// })
+chainInsert([{val:1},{val:2},{val:3},{val:4}],{val:0},function(item){
+    return item.val == 2;
+})
