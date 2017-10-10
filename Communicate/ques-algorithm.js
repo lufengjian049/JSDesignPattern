@@ -565,3 +565,127 @@ function create(arr){
   
 }
 
+//单向
+function node(element){
+  this.element = element;
+  this.next = null;
+}
+function LinkedList(){
+  this.head = new node("head");
+  this.last = this.head;
+}
+LinkedList.prototype = {
+  find:function(item){
+    var curEle = this.head;
+    var checkfn = typeof item == 'function' ? item : function(curitem){
+      return curitem == item;
+    };
+    while(!checkfn(curEle.element)){
+      curEle = curEle.next;
+    }
+    return curEle;
+  },
+  append:function(item){
+    var newEle = new node(item);
+    this.last.next = newEle;
+    //更新last
+    this.last = newEle;
+  },
+  init:function(arr){
+    if(arr.length){
+      arr.forEach(function(item){
+        this.append(item);
+      }.bind(this))
+    }
+  },
+  //newele fn before after
+  insert:function(newele,elem){
+    if(arguments.length < 2)
+      return;
+    var desele;
+    //找到目标元素
+    var desele = this.find(elem);
+    var newnode = new node(newele);
+    newnode.next = desele.next;
+    desele.next = newnode;
+  },
+  findPrev:function(item){
+    var elem = this.head.next;
+    var checkfn = typeof item == 'function' ? item : function(curitem){
+      return curitem == item;
+    };
+    var prev = this.head;
+    while(!checkfn(elem.element)){
+      prev = elem;
+      elem = elem.next;
+    }
+    return prev;
+  },
+  //item or fn
+  delete:function(){
+    if(arguments.length < 1) return;
+    var destprevele = this.findPrev(arguments[0]);
+    var destele = destprevele.next
+    destprevele.next = destele.next;
+  },
+  display:function(){
+    var retarr = [];
+    var curnode = this.head;
+    while(curnode.next != null){
+      curnode = curnode.next;
+      retarr.push(curnode.element);
+    }
+    return retarr;
+  }
+}
+LinkedList.prototype.constructor = LinkedList;
+//test
+var llist = new LinkedList();
+// llist.init([1,2,3,4]);
+// llist.insert(5,2);
+llist.init([{val:1},{val:2},{val:3},{val:4}]);
+llist.insert({val:5},function(item){
+  return item.val == 2
+})
+console.log(llist.display());
+llist.delete(function(item){
+  return item.val == 1
+})
+console.log(llist.display());
+
+function Node2(elem){
+  this.element = elem;
+  this.prev = null;
+  this.next = null;
+}
+function LinkedList2(){
+  this.head = new Node2('head');
+  this.last = this.head;
+}
+LinkedList2.prototype = {
+  append:function(elem){
+    var newnode = new Node2(elem);
+    this.last.next = newnode;
+    newnode.prev = this.last;
+    this.last = newnode;
+  },
+  init:function(arr){
+    if(arr.length){
+      arr.forEach(function(item){
+        this.append(item);
+      }.bind(this))
+    }
+  },
+  display:function(){
+    var retarr = [];
+    var curnode = this.head;
+    while(curnode.next != null){
+      curnode = curnode.next;
+      retarr.push(curnode.element);
+    }
+    return retarr;
+  }
+}
+var llist2 = new LinkedList2()
+llist2.init([{val:1},{val:2},{val:3},{val:4}]);
+console.log(llist2.display());
