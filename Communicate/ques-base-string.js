@@ -243,3 +243,5 @@ function todo_regex() {
     return /<!--[ \t]*@?(?:todo|fixme):?[ \t]*([^\n]+)[ \t]*-->|(?:@|\/\/[ \t]*)?(?:todo|fixme):?[ \t]*([^\n]+)/i;
 };
 var match = '<!-- todo: foo bar baz -->'.match(todo_regex());
+//内存泄漏
+//http://www.zcfy.cc/article/how-javascript-works-memory-management-how-to-handle-4-common-memory-leaks-4211.html?t=new
