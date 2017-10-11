@@ -410,3 +410,50 @@ function chainInsert(arr,val,fn){
 chainInsert([{val:1},{val:2},{val:3},{val:4}],{val:0},function(item){
     return item.val == 2;
 })
+function isObject(x){
+    return typeof x == 'object' && x !== null && !(x instanceof RegExp) && !(x instanceof Error) && !(x instanceof Date);
+}
+function mapobj(obj,fn,opts,seen){
+    opts = Object.assign({
+        deep:false,
+        target:{}
+    },opts);
+    seen = seen || new WeakMap();
+    if(seen.has(obj)){
+        return seen.get(obj);
+    }
+    seen.set(obj,opts.target);
+    const target = opts.target;
+    delete opts.target;
+    for(const key of Object.keys(obj)){
+        const val = obj[key];
+        const res = fn(key,val,obj);
+        let newVal = res[1];
+        if(opts.deep && isObject(newVal)){
+            if(Array.isArray(newVal)){
+                newVal = newVal.map(x => isObject(x) ? mapobj(x,fn,opts,seen) : x);
+            }else{
+                newVal = mapobj(newVal,fn,opts,seen);
+            }
+        }
+        target[res[0]] = newVal;
+    }
+    return target;
+}
+function mapArray(obj,fn){
+    var idx = 0;
+    var result = mapobj(obj,(key,val) => [idx++,fn(key,val)]);
+    result.length = idx;
+    return Array.from(result);
+}
+//no change origin array get a new array
+function swapArray(arr,caller,target){
+    var Instance = arr.constructor();
+    var stash = arr;
+    var InstanceType = Array.isArray(Instance) ? 'array' : typeof Instance;
+    if(InstanceType !== 'array') throw 'error';
+    stash.map((s,i) => Instance[i] = s);
+    Instance[caller] = Instance.splice(target,1,Instance[caller])[0];
+    return Instance;
+}
+console.log(swapArray([1,2,3,4],0,2))
