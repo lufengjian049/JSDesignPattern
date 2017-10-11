@@ -194,3 +194,52 @@ console.log(pad2("test",6,"!",true))
 function format(str,object){
     //  /\\?\#{([^{}]+)\}/gm
 }
+function identity(str) {
+    return str;
+}
+function word_wrap(str,options){
+    options = options || {};
+    if (str == null) {
+      return str;
+    }
+  
+    var width = options.width || 50;
+    var indent = (typeof options.indent === 'string')
+      ? options.indent
+      : '  ';
+  
+    var newline = options.newline || '\n' + indent;
+    var escape = typeof options.escape === 'function'
+      ? options.escape
+      : identity;
+  
+    var regexString = '.{1,' + width + '}';
+    if (options.cut !== true) {
+      regexString += '([\\s\u200B]+|$)|[^\\s\u200B]+?([\\s\u200B]+|$)';
+    }
+    //.{1,50}([\s​]+|$)|[^\s​]+?([\s​]+|$)
+    var re = new RegExp(regexString, 'g');
+    var lines = str.match(re) || [];
+    var result = indent + lines.map(function(line) {
+      if (line.slice(-1) === '\n') {
+        line = line.slice(0, line.length - 1);
+      }
+      return escape(line);
+    }).join(newline);
+  
+    if (options.trim === true) {
+      result = result.replace(/[ \t]*$/gm, '');
+    }
+    return result;
+}
+//match word
+function word_regex() {
+    return /[a-zA-Z0-9_\u0392-\u03c9\u0400-\u04FF]+|[\u4E00-\u9FFF\u3400-\u4dbf\uf900-\ufaff\u3040-\u309f\uac00-\ud7af\u0400-\u04FF]+|[\u00E4\u00C4\u00E5\u00C5\u00F6\u00D6]+|\w+/g;
+}
+function whitespace_regex() {
+    return /^[\s\f\n\r\t\u1680\u180e\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u2028\u2029\u202f\u205f\u3000\ufeff\x09\x0a\x0b\x0c\x0d\x20\xa0]+$/;
+};
+function todo_regex() {
+    return /<!--[ \t]*@?(?:todo|fixme):?[ \t]*([^\n]+)[ \t]*-->|(?:@|\/\/[ \t]*)?(?:todo|fixme):?[ \t]*([^\n]+)/i;
+};
+var match = '<!-- todo: foo bar baz -->'.match(todo_regex());
