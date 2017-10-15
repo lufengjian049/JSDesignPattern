@@ -13,3 +13,7 @@
 
 //https://github.com/callumacrae/regex-tuesday
 //https://github.com/jawil/blog/issues/20
+
+//4. /([^\*]|^)\*(?!\*)([\s\S]+?)([^\*])\*(?!\*)/g  $1<em>$2$3</em>
+//域名协议: 域名中只允许中间出现  - 
+//7. /^https?:\/\/[a-z0-9](?:[a-z0-9-]{0,61}?[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}?[a-z0-9])?)+\/?$/i
