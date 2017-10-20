@@ -236,4 +236,125 @@ var divide = function(a,b){
 var half = _partial(divide,_,2);
 console.log('half',half(5));
 
+// function isObj(obj){
+//   return Object.prototype.toString.call(obj) == '[object Object]';
+// }
+var toString = Function.call.bind(Object.prototype.toString);
+function isObj(obj){
+  return toString(obj) == '[object Object]';
+}
+function originzipmap(keys,vals){
+  return keys.reduce(function(acc,key,index){
+    acc[key] = vals[index];
+    return acc;
+  },{});
+}
+function zipmapPairs(arr){
+  return arr.reduce(function(acc,item){
+    acc[item[0]] = item[1];
+    return acc;
+  },{});
+}
+function zipmapObjs(arr){
+  return arr.reduce(function(acc,item){
+    acc[item.key] = item.value;
+    return acc;
+  },{});
+}
+function zipmap(keys,vals){
+  if(!vals){
+    if(Array.isArray(keys) && !keys.length) return {};
+    if(Array.isArray(keys[0])) return zipmapPairs(keys);
+    if(isObj(keys[0])) return zipmapObjs(keys);
+    throw new TypeError("error");
+  }
+  return originzipmap(keys,vals);
+}
+console.log(zipmap(['a', 'b', 'c'],[1,2,3]));
+console.log(zipmap([
+  { key: 'foo', value: 'bar' },
+  { key: 'hi', value: 'bye' },
+]));
+console.log(zipmap([
+  ['foo', 'bar'],
+  ['hi', 'bye']
+]));
+//基本类型到引用类型，还有date
+// function deepEqual1(actual,expected,opts){
+//   var akeys = Object.keys(obja),
+//       bkeys = Object.keys(objb);
+//   if(akeys.length != bkeys.length){
+//     return false;
+//   }else{
+//     for(var i=0;i<akeys.length;i++){
+//       var curkey = akeys[i];
+//       if(obja[curkey] != objb[curkey]){
+//         return false;
+//       }
+      
+//     }
+//   }
+// }
+//1.基本类型值===直接返回
+//2.都是基本类型值得判断
+//3.都是时间格式的判断
+//4.统一都作对象处理(也处理了类型不一样的情况)
+//都是对象的处理，key的长度，排序后，key是否都相同,在比较value
+function deepEqual(actual,expected,opts){
+  if(!opts) opts = {};
+  if(actual === expected){
+    return true;
+  }else if(actual instanceof Date && expected instanceof Date){
+    return actual.getTime() == expected.getTime();
+  }else if(!actual || !expected || typeof actual != 'object' && typeof expected != 'object'){
+    return opts.strict ? actual === expected : actual == expected;
+  }else{
+    return objEqual(actual,expected,opts);
+  }
+}
+function isUndefinedOrNull(value){
+  return value === undefined || value === null;
+}
+function isArgument(obj){
+  return toString(obj) == "[object Argument]";
+}
+function objEqual(a,b,opts){
+  if(isUndefinedOrNull(a) || isUndefinedOrNull(b)){
+    return false;
+  }
+  if(a.prototype != b.prototype) return false;
+  if(isArgument(a)){
+    if(!isArgument(b)){
+      return false;
+    }
+    a = Array.prototype.slice(a);
+    b = Array.prototype.slice(b);
+    return deepEqual(a,b,opts);
+  }
+  var ka,kb;
+  try{
+    ka = Object.keys(a);
+    kb = Object.keys(b);
+  }catch(e){
+    return false;
+  }
+  if(ka.length != kb.length){
+    return false;
+  }
+  ka.sort();
+  kb.sort();
+  //key is or not equal??
+  for(var i = ka.length-1;i>=0;i--){
+    if(ka[i] != kb[i]){
+      return false;
+    }
+  }
+  for(i = ka.length - 1;i>=0;i--){
+    var key = ka[i];
+    if(!deepEqual(a[key],b[key],opts)) return false;
+  }
+  return typeof a === typeof b;
+}
+deepEqual(new Date(),32);
+
 //https://github.com/parro-it/awesome-micro-npm-packages
