@@ -356,5 +356,112 @@ function objEqual(a,b,opts){
   return typeof a === typeof b;
 }
 deepEqual(new Date(),32);
+var hasOwn = Function.call.bind(Object.prototype.hasOwnProperty);
+function deepAssign(target,sources){
+  target = Object(target);
+  for(var index = 1;index<arguments.length;index++){
+    var source = arguments[index];
+    assign(target,source);
+  }
+  return target;
+}
+function assign(to,from){
+  if(to === from){
+    return to;
+  }
+  from = Object(from);
+  for(var key in from){
+    if(hasOwn(from,key)){
+      var val = from[key];
+      if(val === null || val === undefined){
+        return;
+      }
+      if(!hasOwn(to,key) || !isObj(val) || !isObj(to[key])){
+        to[key] = val;
+      }else{
+        to[key] = assign(Object(to[key]),from[key]);
+      }
+    }
+  }
+  return to;
+}
+console.log(deepAssign({a:2},{a:{b:2}},{a:{c:3}}));
+//npm split-string https://www.npmjs.com/package/split-string
+//'a.b'.c "a.b".c (a.b).c
+function setValue(obj,props,val){
+  // var propArr = props.match(/['"(\[<{]?([^'"(\[<{]+)['"(\[<{]?\.?/g);
+  // 纵向分组 也会匹配出 undefined; ！！！！  转义
+  // 对象的合并，extend进来的&&绑定的属性也是对象，需要extend一下
+  var reg = /(['"(\[<{]([^'"(\[<{]+)['")\]>}]|([^\.]+))\.?/g,
+      matchedprop,
+      addedobj = obj;
+  while(matchedprop = reg.exec(props)){
+    var addkey = matchedprop[2] || matchedprop[3];
+    if(matchedprop[1] === addkey)
+      addedobj[addkey] = val;
+    else{
+      addedobj[addkey] = {};
+      addedobj = addedobj[addkey];
+    }
+  }
+  return obj;
+  // obj[matchedprop] = val;
+}
+console.log(setValue({},'a\\.b\\.c',3));
+
+function hasDeepKey(keys,obj){
+  if(typeof obj == 'undefined'){
+    return function(o){
+      return hasKeyDeep(keys,o);
+    }
+    return hasKeyDeep(keys,obj);
+  }
+}
+//keys -> array 递归遍历
+function hasKeyDeep(keys,obj){
+  if(typeof keys == 'string'){
+    return hasKeyDeep(keys.split("."),obj);
+  }
+  if(keys.length === 0){
+    return true;
+  }
+  if(keys.length  === 1){
+    return obj !== null && obj.hasOwnProperty(keys[0]);
+  }
+  if(obj.hasOwnProperty(keys[0])){
+    return hasKeyDeep(keys.slice(1),obj[keys[0]]);
+  }
+  return false;
+}
+var keysarr = [];
+function flattenKeys(obj,opts){
+  opts = Object.assign({sep:'_',snake:true,filter:String.prototype.toLowerCase},opts);
+  for(var key in obj){
+    if(obj.hasOwnProperty(key)){
+      var val = obj[key],
+          parentkey = [key];
+      keysarr.push(parentkey.slice());
+      if(isObj(val)){
+        getKeys(parentkey,obj[key]);
+      }
+    }
+  }
+  console.log(keysarr);
+}
+function getKeys(parentkey,curobj){
+  if(curobj){
+    for(var key in curobj){
+      if(curobj.hasOwnProperty(key)){
+        var val = curobj[key];
+        parentkey.push(key);
+        keysarr.push(parentkey.slice());
+        if(isObj(val)){
+          getKeys(parentkey,curobj[key]);
+        }
+      }
+    }
+  }
+}
+flattenKeys({zero:{one:1,second:{third:3}},test:0});
 
 //https://github.com/parro-it/awesome-micro-npm-packages
