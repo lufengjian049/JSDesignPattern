@@ -464,4 +464,84 @@ function getKeys(parentkey,curobj){
 }
 flattenKeys({zero:{one:1,second:{third:3}},test:0});
 
+function prefix(pref){
+  return function(str){
+    return pref +  str;
+  }
+}
+function flattenKeys2(obj,opts){
+  opts = Object.assign({sep:'_',snake:true,filter:String.prototype.toLowerCase},opts);
+  return Object.keys(obj).reduce(function(keys,key){
+    var val = obj[key];
+    Array.prototype.push.call(keys,key);
+    if(isObj(val)){
+      Array.prototype.push.apply(keys,flattenKeys2(val,opts).map(prefix(key+opts.sep)));
+    }
+    return keys;
+  }, []);
+}
+console.log(flattenKeys2({zero:{one:1,second:{third:3}},test:0}));
+function flattenKeys1(obj,opts){
+  opts = Object.assign({sep:'_',snake:true,filter:String.prototype.toLowerCase},opts);
+  return Object.keys(obj).reduce(function(keys,key){
+    var val = obj[key];
+    if(isObj(val)){
+      Array.prototype.push.apply(keys,flattenKeys1(val,opts).map(prefix(key+opts.sep)));
+    }else{
+      Array.prototype.push.call(keys,key);
+    }
+    return keys;
+  }, []);
+}
+function getValue(obj,key){
+  return key.split(".").reduce(function(curobj,key){
+    return curobj[key];
+  },obj);
+}
+function flattenobj2(obj){
+  return flattenKeys1(obj,{sep:'.'}).reduce(function(robj,key){
+    robj[key] = getValue(obj,key);
+    return robj;
+  },{});
+}
+function flattenobj(opts){
+  opts = opts || {};
+  var blanklist = opts.blanklist || [];
+  var sep = opts.sep || '.';
+  // var onlyLeaves = opts.onlyLeaves === void 0 ? false : opts.onlyLeaves;
+  var onlyLeaves = opts.onlyLeaves && true;
+  return flatten;
+  function flatten(obj){
+    var result = {};
+    iterator(obj,'',result);
+    return result;
+  }
+  function iterator(obj,prefix,flattened){
+    var keys = Object.keys(obj);
+    for(var i=0;i<keys.length;i++){
+      var key = keys[i],
+          val = obj[key];
+      if(isObj(val) && !isBlanklisted(val)){
+        iterator(val,prefix + key + sep,flattened);
+        continue;
+      }
+      onlyLeaves ? flattened[key] = val : flattened[prefix + key] = val
+    }
+  }
+  function isBlanklisted(obj){
+    for(var i = 0;i<blanklist.length;i++){
+      if(obj instanceof blanklist[i]) return true;
+    }
+  }
+}
+console.log(flattenobj({onlyLeaves:true})({
+  foo: 1,
+  bar: {
+    sub1: 2,
+    sub2: {
+      sub3: 3
+    }
+  }
+}));
 //https://github.com/parro-it/awesome-micro-npm-packages
+//https://github.com/jonschlinkert?tab=repositories
