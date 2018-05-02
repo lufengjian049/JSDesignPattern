@@ -36,6 +36,7 @@ function set(target,key,value,receiver){
 //将与当前属性key相关的observe函数 添加到 队列中,注意 set 主要是防止重复添加的情况
 function registerObserve(target,key,observe){
   var observesForKey = observes.get(target).get(key)
+  console.log('key',key);
   if(!observesForKey){
     observesForKey = new Set()
     observes.get(target).set(key,observesForKey)
