@@ -103,6 +103,12 @@ function getUserJobInfo(id) {
 //immediate -- https://github.com/calvinmetcalf/immediate/blob/master/lib/index.js
 //https://zhuanlan.zhihu.com/p/34421918
 //https://github.com/whinc/blog/issues/2
+//0.为什么then方法是异步调用? 同步和异步可能会引发混乱
+//1.为什么.then方法返回的是一个新的promise对象而不是this，而进行链式调用?
+//2.为什么.then的执行函数只会执行一次？
+      // promise对象的状态从pending转换为Fulfilled或者Rejected后，这个状态就不可变了(settled);所以then的回调只执行一次
+//3.Promise.resolve()方法的功效? 1.new Promise的快捷方式 2.将thenable对象转化为Promise对象
+//4.什么是thenable对象？ 具有.then方法的一类对象，但是具有与Promise所拥有的then方法相同的功能和处理过程
 function PromiseNew(executor) {
   var self = this;
   this.status = 'pending';
@@ -192,3 +198,76 @@ new Promise((resolve,reject) => {
   console.log(value);
 });
 console.log('end..');
+
+class TimeoutError extends Error {
+  constructor(error) {
+    super(error);
+  }
+}
+function delayPromise(ms) {
+  return new Promise((resolve,reject) => {
+    setTimeout(resolve,ms);
+  })
+}
+function timeoutPromise(promise,ms) {
+  var timeout = delayPromise(ms).then(() => {
+    throw new TimeoutError('Operaction timed out after ' + ms + 'ms');
+    // return Promise.reject(0);
+  });
+  return Promise.race([promise,timeout]);
+}
+var taskPromise = new Promise(resolve => {
+  var delay = Math.random() * 2000;
+  setTimeout(() => {
+    resolve(delay + 'ms');
+  },delay);
+})
+timeoutPromise(taskPromise,1000).then(value => {
+  console.log('end:' + value);
+}).catch(error => {
+  if(error instanceof TimeoutError) {
+    //取消 接口请求的abort
+  }
+  console.log('error:' + (error instanceof TimeoutError));
+})
+
+//给一个函数附加了太多的功能，根据分离职责的原则，可以将功能分离出去
+function createXHRPromise1(url) {
+  var req = new XMLHttpRequest();
+  //...
+  var promise = new Promise((resolve,reject) => {});
+  var abort = function() {
+    if(req.readyState !== XMLHttpRequest.UNSENT) {
+      req.abort();
+    }
+  }
+  return {
+    promise,
+    abort,
+  }
+}
+
+//改进,函数职责单一
+var requestMap = {};
+function createXHRPromise(url) {
+  var req = new XMLHttpRequest();
+  //...
+  var promise = new Promise((resolve,reject) => {});
+  requestMap[url] = {
+    req,
+    promise
+  }
+  return promise;
+}
+function cancelPromise(promise) {
+  var request;
+  Object.keys(requestMap).some((url) => {
+    if(requestMap[url].promise === promise) {
+      request = requestMap[url].req;
+      return true;
+    }
+  })
+  if(request && request.readyState === XMLHttpRequest.UNSENT) {
+    request.abort();
+  }
+}
