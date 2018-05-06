@@ -114,6 +114,7 @@ function getUserJobInfo(id) {
 //then函数返回的是一个非promise对象，需要resolve完成then返回的promise对象
 //                  promise对象，给promise对象附加then方法，在附加的then方法内，resolve完成父promise(then返回的promise)的状态。
 //                  附加的then方法，其实只做一件事件，就是resolve操作。跟new Promise(exector)的exector一样
+//https://github.com/getify/asynquence
 function PromiseNew(executor) {
   var self = this;
   this.status = 'pending';
@@ -293,3 +294,15 @@ async function asyncfn() {
 asyncfn().then(value => console.log('from async',value));
 
 //callback -> promise -> generator(co) -> async/await
+
+//promise 队列
+function sequenceTasks(tasks) {
+  function recordValue(results,value) {
+    results.push(value);
+    return results;
+  }
+  const pushValue = recordValue.bind(null,[]);
+  return tasks.reduce((promise,task) => {
+    return promise.then(task).then(pushValue)
+  },Promise.resolve());
+}
