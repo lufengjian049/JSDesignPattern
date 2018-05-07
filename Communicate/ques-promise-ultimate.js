@@ -167,6 +167,23 @@ class ESPromise {
     // },this.resolve());
   }
   /**
+   * 给超时任务在附加一个then监听，处理超时的清理工作
+   * @param {*} promise 
+   */
+  static observe(promise) {
+
+  }
+  /**
+   * 第一个完成的，注意全部失败的挂起
+   * @param {*} iterable 
+   */
+  static first(iterable) {
+
+  }
+  static map(iterable,cb) {
+
+  }
+  /**
    * 传入处理成功回调和错误回调
    * 返回都是一个新的promise,
    * then方法异步处理回调
