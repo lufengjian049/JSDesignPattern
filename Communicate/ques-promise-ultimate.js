@@ -170,19 +170,38 @@ class ESPromise {
    * 给超时任务在附加一个then监听，处理超时的清理工作
    * @param {*} promise 
    */
-  static observe(promise) {
+  // static observe(promise) {
+  //   return promise.then(data => {
 
-  }
+  //   }).catch(error => {
+
+  //   })
+  // }
   /**
    * 第一个完成的，注意全部失败的挂起
    * @param {*} iterable 
    */
   static first(iterable) {
-
+    const len = iterable.length;
+    return this.constructor((resolve,reject) => {
+      let errorcount = 0;
+      for(let i=0;i < len;i++) {
+        this.resolve(iterable[i]).then(value => {
+          resolve(value);
+        }).catch(error => {
+          errorcount++;
+          if(errorcount === len) {
+            reject('error');
+          }
+        })
+      }
+    })
   }
-  static map(iterable,cb) {
-
-  }
+  // static map(iterable,cb) {
+  //   return this.all(iterable.map(item => {
+  //     this.resolve(item).then()
+  //   }))
+  // }
   /**
    * 传入处理成功回调和错误回调
    * 返回都是一个新的promise,
