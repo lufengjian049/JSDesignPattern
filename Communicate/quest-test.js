@@ -169,3 +169,72 @@ var str2 = 'anbgs';
 var newStr = patch(str1, str2);
 
 console.log(newStr, newStr === str2); // true
+//函数的词法作用域，在创建时就保存了上下文的作用域链[[scope]]，执行分两个阶段，分析(复制[[scope]]，变量对象，压入作用域链)，执行(实际去赋值变量对象)
+Function.prototype.call2 = function(context) {
+    context = context || window;
+    context.fn = this;
+    var len = arguments.length;
+    var args = [];
+    for(var i=1;i< len;i++) {
+        args.push('arguments[' + i + ']');
+    }
+    return eval('context.fn('+args+')');
+}
+// function test(arg1,arg2) {
+//     // this.name = 'test';
+//     console.log(this.name,arg1,arg2);
+//     return 'test return'
+// }
+// var bar = {name: 'bar'};
+// console.log(test.call2(bar,222,333))
+
+Function.prototype.bind2 = function(context) {
+    var args = [].slice.call(arguments,1);
+    // return function() {
+    //     return this.apply(context,args.concat([].slice.call(arguments)));
+    // }
+    //返回的bind函数作为构造函数绑定的this要失效，参数的功效还在
+    var _self = this;
+    function fbind() {
+        var iargs = [].slice.call(arguments);
+        return _self.apply(this instanceof fbind ? this : context,args.concat(iargs))
+    }
+    //绑定函数的原型还要给回去
+    //如果是直接将this.prototype肤给fbind原型，会造成原型的篡改；所以中间加一层空函数
+    function fnoop() {}
+    fnoop.prototype = this.prototype;
+    fbind.prototype = new fnoop();
+    return fbind;
+}
+Function.prototype.bind3 = function(context) {
+    var args = [].slice.call(arguments,1);
+    var fnlen = this.length;
+    var applyfn = this.apply
+    var _self = this;
+    return function bindret() {
+        var iargs = [].slice.call(arguments);
+        args = args.concat(iargs);
+        if(args.length < fnlen) {
+            return bindret;
+        }else{
+            return _self.apply(context,args);
+        }
+    }
+}
+function test1(a,b,c) {
+    console.log('bind3',a,b,c);
+}
+var testbind = test1.bind3(null,1);
+testbind(2)(3);
+var foo={value: 'foovalue'};
+function bar(name,a,b) {
+    console.log(this.value);
+    this.ibar = 111;
+    console.log(name,a,b);
+}
+bar.prototype.friend = 'test22';
+var bindbar = bar.bind2(foo,'bar',1);
+var barins = new bindbar(2);
+console.log(barins.friend,barins.ibar);
+
+//task -- channel 1.先有监听takeCb，后put->结束后删除takeCb;再有put会加入到buffer缓冲队列中
