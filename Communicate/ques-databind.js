@@ -1,3 +1,4 @@
+// 数据绑定是将数据源与数据提供者、消费者绑定并在它们之间保持同步的一种基本技术。
 // //数据提供者
 // var provider = {
 //   message:'test'
@@ -31,8 +32,10 @@
 // digest()
 // provider.message = "changed test"
 // digest()
-
+//provider => observable可观察对象
+//提前 设置访问器属性，会有性能问题，是否可以后置，再需要的时候才去设置
 //getter setter
+let currentHandle = null;
 function observable(provider){
   for(var prop in provider){
     observableProp(provider,prop);
@@ -42,16 +45,29 @@ function observable(provider){
   }
 }
 function observableProp(provider,prop){
-  const value = provider[prop]
+  let value = provider[prop]
   Object.defineProperty(provider,prop,{
     get() {
-
+      //获取属性时，动态绑定handle
+      if(currentHandle) {
+        provider._handles || (provider._handles = {});
+        provider._handles[prop] = currentHandle;
+      }
       return value
     },
-    set() {
-
+    set(newvalue) {
+      value = newvalue;
+      const handle = provider._handles && provider._handles[prop];
+      currentHandle = handle;
+      handle();
+      currentHandle = null;
     }
   })
+}
+function observe(handle) {
+  currentHandle = handle;
+  handle();
+  currentHandle = null;
 }
 const observeProvider = observable({
   test:'test',
@@ -60,3 +76,5 @@ const observeProvider = observable({
 observe(() => {
   console.log(observeProvider.test + '--' + observeProvider.text)
 })
+//get 收集依赖
+//set 取出依赖，执行

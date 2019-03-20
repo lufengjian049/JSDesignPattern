@@ -10,7 +10,7 @@ function observeable(obj){
   return new Proxy(obj,{get,set})
 }
 function get(target,key,receiver){
-  // console.log(target,key)
+  // console.log('get key',target,'---key---:',key)
   var result = Reflect.get(target,key,receiver)
   if(currentObserve){
     registerObserve(target,key,currentObserve)
@@ -26,7 +26,7 @@ function get(target,key,receiver){
 //获取到所有与 key 相关的 observe,加入到执行队列中
 //注意：set时获取到的 target 只是相对key的一层(当前)对象
 function set(target,key,value,receiver){
-  console.log('set:',target,key)
+  // console.log('set:',target,key)
   var observesForKey = observes.get(target).get(key)
   if(observesForKey){
     observesForKey.forEach(queueObserve)
@@ -36,7 +36,7 @@ function set(target,key,value,receiver){
 //将与当前属性key相关的observe函数 添加到 队列中,注意 set 主要是防止重复添加的情况
 function registerObserve(target,key,observe){
   var observesForKey = observes.get(target).get(key)
-  console.log('key',key);
+  // console.log('key',key);
   if(!observesForKey){
     observesForKey = new Set()
     observes.get(target).set(key,observesForKey)
@@ -63,7 +63,7 @@ function queueObserve(observe){
   queuedObserves.add(observe)
 }
 function runObserves(){
-  console.log('queue length',queuedObserves.size)
+  // console.log('queue length',queuedObserves.size)
   // queue length 2
   try{
     queuedObserves.forEach(runObserve)
@@ -80,10 +80,12 @@ function runObserve(observe){
 //防止 多次包装，判断包装对象是否是observeable
 
 //test
-// var test = observeable({
-//   test:'test1111',
-//   text:'msgmsg'
-// })
+const obj = {
+  test:'test1111',
+  text:'msgmsg',
+  mode: 0
+};
+var test = observeable(obj);
 // observe(function(){
 //   console.log('test and text:',test.test,test.text)
 // })
@@ -93,15 +95,36 @@ function runObserve(observe){
 // setTimeout(() => {
 //   test.text = "change text haha。。。"
 // },1000)
+observe(() => {
+  console.log('observe...');
+  if(test.mode === 0) {
+    console.log('test:',test.test);
+  }else{
+    console.log('text:',test.text);
+  }
+})
+setTimeout(() => {
+  test.text = 'text change11';
+  test.mode = 1;
+  // console.log(observes.get(obj).get('test'));
+  // test.test = 'test change222';
+},0)
+setTimeout(() => {
+  test.test = 'test change222';
+},10);
 // setTimeout(() => {
 //   test.test = "test2222"
 // },2000)
 
-var person = observeable({data:{name:'test'}})
-observe(function(){
-  console.log('person data',person.data)
-})
-setTimeout(() => {
-  person.data.newproperty = 'newproperty'
-  console.log(person)
-},1000)
+// var person = observeable({data:{name:'test'}})
+// observe(function(){
+//   console.log('person data',person.data)
+// })
+// setTimeout(() => {
+//   person.data.newproperty = 'newproperty'
+//   console.log(person)
+// },1000)
+//动态的依赖绑定
+//reaction的依赖属性
+//observeable,收集依赖 绑定到对应属性的reaction
+//运行时依赖，会做diff操作

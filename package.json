@@ -1,0 +1,25 @@
+{
+  "name": "jsdesignpattern",
+  "version": "1.0.0",
+  "description": "> 用于处理对象创建的设计模式",
+  "main": "index.js",
+  "bin": {
+    "jsdesignpattern": "test.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lufengjian049/JSDesignPattern.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lufengjian049/JSDesignPattern/issues"
+  },
+  "homepage": "https://github.com/lufengjian049/JSDesignPattern#readme",
+  "dependencies": {
+    "shelljs": "^0.8.3"
+  }
+}
